@@ -24,7 +24,7 @@ async function getCodesquadArticles() {
 
 
 async function getXebiaArticles() {
-    const url = `https://xebia.com/author/mjjthoolen@xebia.com/feed`;
+    const url = `https://xebia.com/author/mthoolenxebia-com/feed/`;
     return Feed.load(url).then(data => ({xebiaArticles: data.items}));
 }
 
