@@ -22,6 +22,12 @@ async function getCodesquadArticles() {
     return Feed.load(url).then(data => ({csArticles: data.items}));
 }
 
+
+async function getXebiaArticles() {
+    const url = `https://xebia.com/author/mjjthoolen@xebia.com/feed`;
+    return Feed.load(url).then(data => ({xebiaArticles: data.items}));
+}
+
 async function getCurrentlyReading() {
     const url = CONFIG.goodreads.url + CONFIG.goodreads.key + `&shelf=currently-reading`;
     return rssParser.parseURL(url).then(data => ({
@@ -100,6 +106,8 @@ async function perform() {
     if (CONFIG.mediumArticles && CONFIG.mediumArticles.enabled) {
         promises.push(getMediumArticles());
         promises.push(getCodesquadArticles());
+        promises.push(getXebiaArticles());
+        
     }
 
     if(CONFIG.goodreads && CONFIG.goodreads.enabled) {
