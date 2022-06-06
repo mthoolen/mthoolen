@@ -17,14 +17,8 @@ async function getMediumArticles() {
     }));
 }
 
-async function getCodesquadArticles() {
-    const url = `https://www.codesquad.nl/author/matthijs-thoolen/feed`;
-    return Feed.load(url).then(data => ({csArticles: data.items}));
-}
-
-
 async function getXebiaArticles() {
-    const url = `https://xebia.com/author/mthoolenxebia-com/feed/`;
+    const url = `https://xebia.com/blog/author/mthoolenxebia-com/feed/`;
     return Feed.load(url).then(data => ({xebiaArticles: data.items}));
 }
 
@@ -105,7 +99,6 @@ async function perform() {
 
     if (CONFIG.mediumArticles && CONFIG.mediumArticles.enabled) {
         promises.push(getMediumArticles());
-        promises.push(getCodesquadArticles());
         promises.push(getXebiaArticles());
         
     }
