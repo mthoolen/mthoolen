@@ -1,5 +1,13 @@
 // https://github.com/anomal/RainbowVis-JS/blob/master/rainbowvis.js
 
+export type Rainbow = {
+  setSpectrum: (...colours: string[]) => Rainbow;
+  setSpectrumByArray: (array: string[]) => Rainbow;
+  colourAt: (number: number) => string;
+  colorAt: (number: number) => string;
+  setNumberRange: (minNumber: number, maxNumber: number) => Rainbow;
+};
+
 export function Rainbow() {
   let gradients = null;
   let minNum = 0;

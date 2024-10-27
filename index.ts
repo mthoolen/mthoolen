@@ -1,43 +1,37 @@
 import {CONFIG} from './config';
 import {Rainbow} from './rainbow';
-import {puppeteerService} from './puppeteer/puppeteer';
 
-import * as Feed from 'rss-to-json';
-import * as RssParser from 'rss-parser';
-import * as pug from 'pug';
+const { parse } = require('rss-to-json');
 import * as fs from 'fs';
+var RssParser = require('rss-parser')
+var pug = require('pug');
 
 const PUG_MAIN_FILE = './main.pug';
 const rssParser = new RssParser({customFields: {item: ['book_description','book_small_image_url','pubDate','book_medium_image_url']}});
 
 async function getMediumArticles() {
     const url = `https://medium.com/feed/@${CONFIG.mediumArticles.username}`;
-    return Feed.load(url).then(data => ({
+    return parse(url).then(data => ({
         articles: data.items.slice(0, CONFIG.mediumArticles.numberOfArticles || 5)
     }));
 }
 
-async function getXebiaArticles() {
-    const url = `https://xebia.com/blog/author/mthoolenxebia-com/feed/`;
-    return Feed.load(url).then(data => ({xebiaArticles: data.items}));
-}
-
 async function getCurrentlyReading() {
     const url = CONFIG.goodreads.url + CONFIG.goodreads.key + `&shelf=currently-reading`;
-    return rssParser.parseURL(url).then(data => ({
+    return rssParser.parseURL(url).then((data: { items: any; }) => ({
         currentlyReading: data.items
     }))
 }
 
 async function getReadBooks() {
     const url = CONFIG.goodreads.url + CONFIG.goodreads.key + `&shelf=read`;
-    return rssParser.parseURL(url).then(data => ({
+    return rssParser.parseURL(url).then((data: { items: any[]; }) => ({
         readBooks: data.items.sort((a,b)=>b.isoDate.localeCompare(a.isoDate))
     }))
 }
 
 async function generateBadges() {
-    const colors = new Rainbow();
+    let colors = new Rainbow();
     colors.setNumberRange(1, CONFIG.badges.list.length);
     colors.setSpectrum(...CONFIG.badges.spectrum);
     const formattedBadges = CONFIG.badges.list.map((badge, index) => ({
@@ -85,13 +79,13 @@ async function getSocialData() {
 }
 
 
-async function generateReadMe(input) {
+async function generateReadMe(input: any) {
     const compiledHtml = pug.compileFile(PUG_MAIN_FILE, {pretty: true})(input);
     fs.writeFileSync('README.md', compiledHtml);
 }
 
 async function perform() {
-    let promises = [];
+    let promises: Promise<any>[] = [];
 
     if (CONFIG.badges && CONFIG.badges.enabled) {
         promises.push(generateBadges());
@@ -99,8 +93,6 @@ async function perform() {
 
     if (CONFIG.mediumArticles && CONFIG.mediumArticles.enabled) {
         promises.push(getMediumArticles());
-        promises.push(getXebiaArticles());
-        
     }
 
     if(CONFIG.goodreads && CONFIG.goodreads.enabled) {
@@ -112,12 +104,8 @@ async function perform() {
     promises.push(getSocialData());
 
     const input = await Promise.all(promises).then(data =>
-        data.reduce((acc, val) => ({...acc, ...val}))
+        data.reduce((acc: any, val: any) => ({...acc, ...val}), {})
     );
-
-    if (puppeteerService.browser) {
-        puppeteerService.close();
-    }
 
     console.log(`✅ README.md has been succesfully built!`);
 
