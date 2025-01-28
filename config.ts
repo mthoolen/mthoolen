@@ -7,9 +7,9 @@ export const CONFIG = {
       url: 'https://github.com/mthoolen',
     },
     {
-      name: 'Twitter',
+      name: 'BlueSky',
       color: '1DA1F2',
-      url: 'https://twitter.com/MThoolen',
+      url: 'https://bsky.app/profile/mthoolen.bsky.social',
     },
     {
       name: 'LinkedIn',
