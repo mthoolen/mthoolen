@@ -11,7 +11,12 @@ const rssParser = new RssParser({customFields: {item: ['book_description','book_
 
 async function getMediumArticles() {
     const url = `https://medium.com/feed/@${CONFIG.mediumArticles.username}`;
-    return parse(url).then(data => ({
+    //medium dislikes axios as a user agent, so this gets around that
+    const headers = {
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+    };
+    return parse(url, {headers}).then(data => ({
         articles: data.items.slice(0, CONFIG.mediumArticles.numberOfArticles || 5)
     }));
 }
